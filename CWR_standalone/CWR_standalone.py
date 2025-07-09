@@ -160,8 +160,8 @@ def generate_sample_data(num_bars: int = 500) -> pd.DataFrame:
     base_price = 45000
 
     # Generate price movements with volatility clustering
-    volatility = np.random.Generator(0.01, 0.04, num_bars)
-    returns = np.random.Generator(0, 1, num_bars) * volatility
+    volatility = np.random.uniform(0.01, 0.04, num_bars)
+    returns = np.random.normal(0, 1, num_bars) * volatility
 
     # Add trend component
     trend = np.sin(np.arange(num_bars) * 0.02) * 0.001
@@ -179,19 +179,19 @@ def generate_sample_data(num_bars: int = 500) -> pd.DataFrame:
         close_price = close_prices[i]
 
         # Generate range based on volatility
-        range_pct = np.random.Generator(0.005, 0.06) * (1 + volatility[i] * 5)
+        range_pct = np.random.uniform(0.005, 0.06) * (1 + volatility[i] * 5)
         range_value = close_price * range_pct
 
         # Generate open price
         if i == 0:
-            open_price = close_price + np.random.Generator(-range_value / 4, range_value / 4)
+            open_price = close_price + np.random.uniform(-range_value / 4, range_value / 4)
         else:
-            gap = np.random.Generator(0, 0.002) * close_prices[i - 1]
+            gap = np.random.normal(0, 0.002) * close_prices[i - 1]
             open_price = close_prices[i - 1] + gap
 
         # Generate high and low
-        high_price = max(open_price, close_price) + np.random.Generator(0, range_value / 3)
-        low_price = min(open_price, close_price) - np.random.Generator(0, range_value / 3)
+        high_price = max(open_price, close_price) + np.random.uniform(0, range_value / 3)
+        low_price = min(open_price, close_price) - np.random.uniform(0, range_value / 3)
 
         # Ensure logical order
         high_price = max(high_price, open_price, close_price)
@@ -199,7 +199,7 @@ def generate_sample_data(num_bars: int = 500) -> pd.DataFrame:
 
         # Generate volume
         price_change = abs(close_price - open_price) / open_price
-        base_volume = np.random.Generator(500, 2000)
+        base_volume = np.random.uniform(500, 2000)
         volume = base_volume * (1 + price_change * 10)
 
         # Create timestamp
@@ -384,7 +384,7 @@ def create_matplotlib_visualization(df: pd.DataFrame, cwr_values: pd.Series):
         return
 
     # Create figure with subplots
-    _, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2, 2, figsize=(15, 10))
+    fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2, 2, figsize=(15, 10))
 
     # 1. Price chart with range overlay
     ax1.plot(df['timestamp'], df['close'], label='Close Price', color='blue', linewidth=1)
@@ -462,11 +462,11 @@ def print_analysis_summary(analysis: Dict[str, Any]):
     stats = analysis['statistics']
     signals = analysis['signals']
 
-    print("\nData Summary:")
+    print(f"\nData Summary:")
     print(f"  Total bars analyzed: {analysis['total_bars']}")
     print(f"  Length parameter: {analysis['length_parameter']}")
 
-    print("\nCWR Statistics:")
+    print(f"\nCWR Statistics:")
     print(f"  Mean: {stats['mean']:.4f}")
     print(f"  Median: {stats['median']:.4f}")
     print(f"  Std Dev: {stats['std']:.4f}")
@@ -475,7 +475,7 @@ def print_analysis_summary(analysis: Dict[str, Any]):
     print(f"  Skewness: {stats['skewness']:.4f}")
     print(f"  Kurtosis: {stats['kurtosis']:.4f}")
 
-    print("\nVolatility Signals:")
+    print(f"\nVolatility Signals:")
     print(
         f"  High Volatility (>1.5): {signals['high_volatility']['count']} occurrences ({signals['high_volatility']['percentage']:.1f}%)")
     print(
@@ -483,13 +483,13 @@ def print_analysis_summary(analysis: Dict[str, Any]):
     print(
         f"  Normal Volatility: {signals['normal_volatility']['count']} occurrences ({signals['normal_volatility']['percentage']:.1f}%)")
 
-    print("\nRange Behavior:")
+    print(f"\nRange Behavior:")
     print(
         f"  Expanding Range (>1.0): {signals['expanding_range']['count']} occurrences ({signals['expanding_range']['percentage']:.1f}%)")
     print(
         f"  Contracting Range (<1.0): {signals['contracting_range']['count']} occurrences ({signals['contracting_range']['percentage']:.1f}%)")
 
-    print("\nInterpretation:")
+    print(f"\nInterpretation:")
     if stats['mean'] > 1.2:
         print("  • Market shows tendency toward wider ranges (higher volatility)")
     elif stats['mean'] < 0.8:
@@ -545,15 +545,15 @@ def main():
     print_analysis_summary(analysis)
 
     # Save results
-    print("\nSaving results...")
+    print(f"\nSaving results...")
     save_results(df, cwr_values, analysis)
 
     # Create visualizations
-    print("\nCreating visualizations...")
+    print(f"\nCreating visualizations...")
     create_plotly_visualization(df, cwr_values)
     create_matplotlib_visualization(df, cwr_values)
 
-    print("\n" + "=" * 50)
+    print(f"\n" + "=" * 50)
     print("ANALYSIS COMPLETE")
     print("=" * 50)
     print("Files generated:")
@@ -561,10 +561,10 @@ def main():
     print("  • cwr_analysis.json - Detailed analysis results")
     print("  • cwr_interactive.html - Interactive Plotly chart")
     print("  • cwr_analysis.png - Static analysis charts")
-    print("\nTo use with your own data:")
-    print("  1. Save your OHLCV data as 'ohlcv_data.csv'")
-    print("  2. Ensure columns: timestamp, open, high, low, close, volume")
-    print("  3. Run this script again")
+    print(f"\nTo use with your own data:")
+    print(f"  1. Save your OHLCV data as 'ohlcv_data.csv'")
+    print(f"  2. Ensure columns: timestamp, open, high, low, close, volume")
+    print(f"  3. Run this script again")
 
 
 if __name__ == "__main__":

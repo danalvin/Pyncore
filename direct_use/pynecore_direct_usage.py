@@ -104,8 +104,8 @@ def generate_sample_ohlcv_data(filename: str = "sample_data.ohlcv", num_bars: in
 
     # Generate realistic price data
     base_price = 50000
-    volatility = np.random.Generator(0.01, 0.03, num_bars)
-    returns = np.random.Generator(0, 1, num_bars) * volatility
+    volatility = np.random.uniform(0.01, 0.03, num_bars)
+    returns = np.random.normal(0, 1, num_bars) * volatility
 
     # Add some trend
     trend = np.sin(np.arange(num_bars) * 0.01) * 0.0005
@@ -123,28 +123,28 @@ def generate_sample_ohlcv_data(filename: str = "sample_data.ohlcv", num_bars: in
         close_price = close_prices[i]
 
         # Generate range
-        range_pct = np.random.Generator(0.005, 0.04) * (1 + volatility[i] * 3)
+        range_pct = np.random.uniform(0.005, 0.04) * (1 + volatility[i] * 3)
         range_value = close_price * range_pct
 
         # Generate OHLC
         if i == 0:
-            open_price = close_price + np.random.Generator(-range_value / 4, range_value / 4)
+            open_price = close_price + np.random.uniform(-range_value / 4, range_value / 4)
         else:
-            gap = np.random.Generator(0, 0.001) * close_prices[i - 1]
+            gap = np.random.normal(0, 0.001) * close_prices[i - 1]
             open_price = close_prices[i - 1] + gap
 
-        high_price = max(open_price, close_price) + np.random.Generator(0, range_value / 2)
-        low_price = min(open_price, close_price) - np.random.Generator(0, range_value / 2)
+        high_price = max(open_price, close_price) + np.random.uniform(0, range_value / 2)
+        low_price = min(open_price, close_price) - np.random.uniform(0, range_value / 2)
 
         # Ensure logical order
         high_price = max(high_price, open_price, close_price)
         low_price = min(low_price, open_price, close_price)
 
         # Generate volume
-        volume = np.random.Generator(1000, 5000)
+        volume = np.random.uniform(1000, 5000)
 
         # Create timestamp (assuming 1-hour bars)
-        timestamp = datetime.now() - timedelta(hours=(num_bars - 1 - i))
+        timestamp = datetime.now() - timedelta(hours=num_bars - i)
 
         data.append({
             'timestamp': timestamp.isoformat(),
@@ -167,7 +167,7 @@ def generate_sample_ohlcv_data(filename: str = "sample_data.ohlcv", num_bars: in
     return csv_filename
 
 
-def simulate_pynecore_execution(data_path: str):
+def simulate_pynecore_execution(script_path: str, data_path: str):
     """
     Simulate PyneCore execution directly from Python
 
@@ -233,7 +233,7 @@ def simulate_pynecore_execution(data_path: str):
         'data': df.to_dict('records')
     }
 
-    print("\nCWR Statistics:")
+    print(f"\nCWR Statistics:")
     print(f"  Mean: {results['statistics']['mean_cwr']:.4f}")
     print(f"  Std: {results['statistics']['std_cwr']:.4f}")
     print(f"  Min: {results['statistics']['min_cwr']:.4f}")
@@ -292,7 +292,7 @@ def main():
 
     # Step 3: Simulate PyneCore execution
     print("\n3. Simulating PyneCore execution...")
-    results = simulate_pynecore_execution(data_path)
+    results = simulate_pynecore_execution(script_path, data_path)
 
     if results:
         # Step 4: Save results
@@ -309,10 +309,10 @@ def main():
         print("  • cwr_pynecore_data.csv - Data with CWR values")
         print("  • cwr_pynecore_summary.json - Summary statistics")
 
-        print("\nTo use with real PyneCore:")
-        print("  1. Install PyneCore: pip install pynesys-pynecore[cli]")
-        print("  2. Convert CSV to .ohlcv: pyne data convert-from sample_data.csv --symbol BTCUSDT --timeframe 1h")
-        print("  3. Run the script: pyne run cwr_indicator.py sample_data.ohlcv")
+        print(f"\nTo use with real PyneCore:")
+        print(f"  1. Install PyneCore: pip install pynesys-pynecore[cli]")
+        print(f"  2. Convert CSV to .ohlcv: pyne data convert-from sample_data.csv --symbol BTCUSDT --timeframe 1h")
+        print(f"  3. Run the script: pyne run cwr_indicator.py sample_data.ohlcv")
     else:
         print("Execution failed!")
 
