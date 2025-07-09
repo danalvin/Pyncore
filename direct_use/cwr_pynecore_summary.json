@@ -1,0 +1,20 @@
+{
+  "indicator": "Candle Widening Ratio (CWR)",
+  "parameters": {
+    "length": 20,
+    "high_threshold": 1.5,
+    "low_threshold": 0.5
+  },
+  "statistics": {
+    "total_bars": 500,
+    "high_volatility_count": 97,
+    "low_volatility_count": 99,
+    "high_volatility_percentage": 19.400000000000002,
+    "low_volatility_percentage": 19.8,
+    "mean_cwr": 1.002438380936484,
+    "std_cwr": 0.5627194386528616,
+    "min_cwr": 0.033181951968975276,
+    "max_cwr": 3.322230959711471
+  },
+  "timestamp": "2025-07-09T16:36:37.856006"
+}
